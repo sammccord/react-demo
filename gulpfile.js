@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
+var sass = require('gulp-sass');
 
 gulp.task('browserify', function() {
     gulp.src('src/js/main.js')
@@ -14,8 +15,13 @@ gulp.task('copy', function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default',['browserify', 'copy']);
-gulp.task('extensionize',['compress', 'copy']);
+gulp.task('buildCSS', function () {
+    gulp.src('src/sass/main.scss')
+        .pipe(sass())
+        .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('default',['browserify', 'copy','buildCSS']);
 
 gulp.task('watch', function() {
     gulp.watch('src/**/*.*', ['default']);
