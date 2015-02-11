@@ -18292,11 +18292,124 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":29}],148:[function(require,module,exports){
-var react = require('react');
+var React = require('react');
+var CommentList = require('./comment-list');
+var CommentForm = require('./comment-form');
 
 var _comments = [
     {author:'President Merkin Muffley',text:'Gentlemen, you can\'t fight in here! This is the War Room.'},
     {author:'Dr. Strangelove', text:'Of course, the whole point of a Doomsday Machine is lost, if you *keep* it a *secret*! Why didn\'t you tell the world, EH?'}
 ];
 
-},{"react":147}]},{},[148])
+var CommentBox = React.createClass({displayName: "CommentBox",
+    getInitialState:function(){
+      return {
+          comments:_comments
+      }
+    },
+    componentDidMount: function(){
+        console.log(this.state.comments);
+    },
+    addComment:function(author,text){
+        _comments.push({
+            author:author,
+            text:text
+        });
+        this.setState({comments:_comments});
+    },
+    render:function(){
+        return (
+            React.createElement("div", null, 
+                React.createElement(CommentList, {comments: this.state.comments, className: "comment-list"}), 
+                React.createElement(CommentForm, {onCommentSubmit: this.addComment, className: "comment-form"})
+            )
+        )
+    }
+});
+
+module.exports = CommentBox;
+
+},{"./comment-form":149,"./comment-list":150,"react":147}],149:[function(require,module,exports){
+var React = require('react');
+
+var CommentForm = React.createClass({displayName: "CommentForm",
+    onClick:function(){
+      alert('HEY');
+    },
+    handleSubmit: function(e){
+        e.preventDefault();
+        var text = this.refs.text.getDOMNode().value.trim();
+        var author = this.refs.author.getDOMNode().value.trim();
+        if (!text) {
+            return;
+        }
+        this.props.onCommentSubmit(author,text);
+
+        this.refs.text.getDOMNode().value = '';
+        this.refs.author.getDOMNode().value = '';
+        return;
+    },
+    render:function(){
+      return (
+          React.createElement("form", {onSubmit: this.handleSubmit}, 
+              React.createElement("input", {onClick: this.onClick, type: "text", placeholder: "author", ref: "author"}), 
+              React.createElement("input", {type: "text", placeholder: "text", ref: "text"}), 
+              React.createElement("button", {type: "submit"}, "Submit")
+          )
+      )
+  }
+})
+
+module.exports = CommentForm;
+
+},{"react":147}],150:[function(require,module,exports){
+var React = require('react');
+var Comment = require('./comment');
+
+var CommentList = React.createClass({displayName: "CommentList",
+    render:function(){
+        var comments = this.props.comments.map(function(comment){
+           return React.createElement(Comment, {comment: comment})
+        });
+
+        return (
+            React.createElement("div", null, 
+                React.createElement("ul", null, 
+                    comments
+                )
+            )
+        )
+    }
+});
+
+module.exports = CommentList;
+
+},{"./comment":151,"react":147}],151:[function(require,module,exports){
+var React = require('react');
+
+var Comment= React.createClass({displayName: "Comment",
+    changeColor:function(){
+      this.getDOMNode().style.color = 'red';
+    },
+    render:function(){
+        return (
+            React.createElement("li", null, 
+                React.createElement("h3", null, this.props.comment.author), 
+                React.createElement("p", {onClick: this.changeColor}, this.props.comment.text)
+            )
+        )
+    }
+});
+
+module.exports = Comment;
+
+},{"react":147}],152:[function(require,module,exports){
+var React = require('react');
+var CommentBox = require('./components/comment-box');
+
+React.render(
+    React.createElement(CommentBox, {className: "commentBox"}),
+    document.getElementById('main')
+)
+
+},{"./components/comment-box":148,"react":147}]},{},[152])
